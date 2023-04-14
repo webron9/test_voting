@@ -17,7 +17,7 @@ export default function Vote({ role, contract, web3, currentAccount }) {
   const [candidates, setCandidates] = useState([]);
   const [vote, setVote] = useState(null);
   const [electionState, setElectionState] = useState(0);
-
+  const [Cand, setCand] = useState(null);
   const [open, setOpen] = useState(false);
 
   const getCandidates = async () => {
@@ -31,6 +31,12 @@ export default function Vote({ role, contract, web3, currentAccount }) {
       setCandidates(temp);
       // setLoading(false);
     }
+  };
+
+  const getVotedCandDetails = async () => {
+    const candidate = await contract.methods.getVotedCand(currentAccount).call();
+    console.log(`voted candidate is : ${Cand}`);
+    setCand(candidate);
   };
 
   const voteCandidate = async (candidate) => {
@@ -63,6 +69,7 @@ export default function Vote({ role, contract, web3, currentAccount }) {
   const handleVote = (event) => {
     event.preventDefault();
     voteCandidate(vote);
+    getVotedCandDetails();
   };
 
   return (
@@ -73,7 +80,8 @@ export default function Vote({ role, contract, web3, currentAccount }) {
             <Typography align="center" variant="h6">
               {electionState === 0 &&
                 "Election has not started yet."}
-              {electionState === 1 && "VOTE FOR YOUR FAVOURITE CANDIDATE"}         
+              {(electionState === 1 && Cand == null) && "VOTE FOR YOUR FAVOURITE CANDIDATE"}
+              {(electionState === 1 && Cand != null) && (<Typography align="center" variant="h6">You Voted to {Cand}</Typography>)}         
              {electionState === 2 &&
                 "Election has ended."}
             </Typography>
