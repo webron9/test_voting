@@ -12,12 +12,12 @@ import FormControl from "@mui/material/FormControl";
 
 import Candidate from "../components/CandidateCard";
 
-export default async function Vote({ role, contract, web3, currentAccount }) {
+export default function Vote({ role, contract, web3, currentAccount }) {
   // const [loading, setLoading] = useState(true);
   const [candidates, setCandidates] = useState([]);
   const [vote, setVote] = useState(null);
   const [electionState, setElectionState] = useState(0);
-  const [votedCandidate, setVotedCandidate] = useState(null);
+
   const [open, setOpen] = useState(false);
 
   const getCandidates = async () => {
@@ -52,36 +52,19 @@ export default async function Vote({ role, contract, web3, currentAccount }) {
   };
 
   useEffect(() => {
-    // Retrieve state values from localStorage on component mount
-    const storedVote = localStorage.getItem("vote");
-    const storedVotedCandidate = localStorage.getItem("votedCandidate");
-
-    if (storedVote !== null) {
-      setVote(parseInt(storedVote));
-    }
-
-    if (storedVotedCandidate !== null) {
-      setVotedCandidate(JSON.parse(storedVotedCandidate));
-    }
-  }, []);
-
-  useEffect(() => {
     getElectionState();
     getCandidates();
   }, [contract]);
 
   const handleVoteChange = (event) => {
     setVote(event.target.value);
-    //setVotedCand(candidates(vote).name);
   };
 
   const handleVote = (event) => {
     event.preventDefault();
     voteCandidate(vote);
-    localStorage.setItem("vote", vote);
-    localStorage.setItem("votedCandidate", JSON.stringify(candidates[vote].name));
   };
-  
+
   return (
     <Box>
       <form onSubmit={handleVote}>
@@ -90,8 +73,7 @@ export default async function Vote({ role, contract, web3, currentAccount }) {
             <Typography align="center" variant="h6">
               {electionState === 0 &&
                 "Election has not started yet."}
-              {(electionState === 1 && votedCandidate !== null) && ( `You voted for ${votedCandidate}`)} 
-              {(electionState === 1 && votedCandidate === null) && "VOTE FOR YOUR FAVOURITE CANDIDATE"}         
+              {electionState === 1 && "VOTE FOR YOUR FAVOURITE CANDIDATE"}         
              {electionState === 2 &&
                 "Election has ended."}
             </Typography>
