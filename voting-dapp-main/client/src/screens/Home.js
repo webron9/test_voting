@@ -4,6 +4,7 @@ import Vote from "./Vote";
 import Admin from "./Admin";
 import ElectionContract from "../contracts/Election.json";
 import getWeb3 from "../utils/getWeb3";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   const [role, setRole] = useState(2);
@@ -50,6 +51,7 @@ export default function Home() {
   }, [contract]);
 
   return (
+
     <Box
       sx={{
         bgcolor: "background.default",
@@ -57,6 +59,7 @@ export default function Home() {
         height: "100vh",
       }}
     >
+      <Navbar />
       {loading ? (
         <Box
           sx={{

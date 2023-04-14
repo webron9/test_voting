@@ -15,6 +15,11 @@ import { useNavigate } from "react-router-dom";
 const settings = ["Logout"];
 
 const Navbar = () => {
+  const handleLogout = () => {
+		localStorage.removeItem("token");
+		window.location.reload();
+	};
+
   const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -32,7 +37,8 @@ const Navbar = () => {
         console.log("Profile");
         break;
       case "Logout":
-        navigate("/");
+        handleLogout();
+
         console.log("Logout");
         break;
       default:
