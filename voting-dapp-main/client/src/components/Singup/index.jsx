@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
 import styles from "./styles.module.css";
+// import ElectionContract from "../src/contracts/Election.json";
+import getWeb3 from "../../utils/getWeb3.js";
+import ElectionContract from "../../contracts/Election.json";
 
 const Signup = () => {
 	const [data, setData] = useState({
@@ -10,9 +13,40 @@ const Signup = () => {
 		email: "",
 		password: "",
 	});
+
 	const [error, setError] = useState("");
 	//const navigate = useNavigate();
 	const [msg,setMsg]=useState("");
+
+	const [role, setRole] = useState(2);
+  	const [web3, setWeb3] = useState(null);
+	const [currentAccount, setCurrentAccount] = useState(null);
+	const [contract, setContract] = useState(null);
+	const [loading, setLoading] = useState(true);
+
+	const loadWeb3 = async () => {
+		try {
+		const web3 = await getWeb3();
+		const accounts = await web3.eth.getAccounts();
+		const networkId = await web3.eth.net.getId();
+		const deployedNetwork = ElectionContract.networks[networkId];
+		const instance = new web3.eth.Contract(
+			ElectionContract.abi,
+			deployedNetwork && deployedNetwork.address
+		);
+		setWeb3(web3);
+		setCurrentAccount(accounts[0]);
+		setContract(instance);
+		console.log(web3,accounts[0],instance);
+		setLoading(false);
+		} catch (error) {
+		console.error("Error:", error);
+		}
+	};
+
+	useEffect(() => {
+		loadWeb3();
+	})
 
 	const handleChange = ({ currentTarget: input }) => {
 		setData({ ...data, [input.name]: input.value });
@@ -26,6 +60,9 @@ const Signup = () => {
 			setMsg(res.message);
 		//	navigate("/login");
 			//console.log(res.message);
+			// Add voter address to blockchain
+			await contract.methods.addVoter(currentAccount).send({ from: currentAccount });
+
 		} catch (error) {
 			if (
 				error.response &&

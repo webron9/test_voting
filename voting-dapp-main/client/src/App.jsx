@@ -23,7 +23,6 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <div>
         <Routes>
-          <Route path="/" element={<div></div>} />
           <Route path="/*" element={<Navbar />} />
         </Routes>
       </div>
